@@ -107,3 +107,28 @@ body{
     background-color: white;
     color: #2c3e50;
 }
+
+
+.menu{
+    padding: 5rem 0;
+    background-color: #f8f9fa;
+}
+.section-title{
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+.section-subtitle{
+    text-align: center;
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 3rem;
+}
+.menu-categories h3{
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: #2c3e50;
+    border-bottom: 2px solid#e74c3c;
+
+}
