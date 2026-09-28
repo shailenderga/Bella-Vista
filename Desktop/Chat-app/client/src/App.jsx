@@ -10,6 +10,9 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [error, setError] = useState("");
+  const [typingUser, setTypingUser] = useState(""); // NEW
+  const [online, setOnline] = useState([]); // NEW
+  const typingTimer = useRef(null); // NEW
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -27,6 +30,29 @@ function App() {
     socket.on('message:new', onNewMessage);
     return () => socket.off('message:new', onNewMessage);
   }, []);
+
+  useEffect(() => {
+    if (joined) socket.emit('user:join', username);
+  }, [joined, username]);
+
+  useEffect(() => {
+    function onOnline(list) {
+      setOnline(list);
+    }
+    socket.on('users:online', onOnline);
+    return () => socket.off('users:online', onOnline);
+  }, []);
+
+  useEffect(() => {
+    function onTyping(name) {
+      if (name === username) return;
+      setTypingUser(name);
+      clearTimeout(typingTimer.current);
+      typingTimer.current = setTimeout(() => setTypingUser(""), 1500);
+    }
+    socket.on('typing', onTyping);
+    return () => socket.off('typing', onTyping);
+  }, [username]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -71,7 +97,7 @@ function App() {
     <div className="chat-screen">
       <header className="chat-header">
         <h1>Real-Time Chat</h1>
-        <span className="me">You are {username}</span>
+        <span className="me">{online.length} online: {online.join(', ')}</span>
       </header>
 
       <main className="messages">
@@ -87,10 +113,19 @@ function App() {
         <div ref={bottomRef} />
       </main>
 
+      {typingUser && <p className="typing">{typingUser} is typing...</p>}
+
       {error && <p className="error">{error}</p>}
 
       <form className="composer" onSubmit={sendMessage}>
-        <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Type a message..." />
+        <input
+          value={text}
+          onChange={(e) => {
+            setText(e.target.value);
+            socket.emit('typing', username);
+          }}
+          placeholder="Type a message..."
+        />
         <button type="submit">Send</button>
       </form>
     </div>
