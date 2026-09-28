@@ -1,5 +1,5 @@
 import { Router } from "express";
- import { addMessages, getMessages } from "./store";
+ import { addMessages, getMessages } from "../store.js";
 
  const router = Router();
 
