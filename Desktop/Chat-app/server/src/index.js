@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import http from "http";
 import {Server} from "socket.io";
 import messageRoutes from "./routes/messages.js";
+import { connectDB } from "./db.js";
 
 dotenv.config();
 
@@ -44,6 +45,11 @@ app.use ((err, req, res, next) =>{
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () =>{
-    console.log('Server running on port' + PORT);
+
+connectDB().then(() =>{
+    server.listen(PORT, () =>{
+        console.log('Server running on port' + PORT);
+    });
+}).catch((err) =>{
+    console.error('Failed to connect to MongoDB', err);
 });
